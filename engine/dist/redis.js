@@ -35,14 +35,22 @@ const listenQueues = (queueNames) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.listenQueues = listenQueues;
-const matchUrl = (data) => {
+const matchUrl = (data) => __awaiter(void 0, void 0, void 0, function* () {
     let response;
-    switch (data.endpoint) {
-        case "/asd":
-            response = respond(data.req);
-            break;
+    try {
+        switch (data.endpoint) {
+            case "/asd":
+                console.log("Processing endpoint /asd");
+                response = yield respond(data.req); // Add await here
+                break;
+        }
+        console.log("Publishing response:", response);
+        yield exports.publisher.publish(data._id, JSON.stringify(response));
     }
-};
+    catch (e) {
+        console.error("Error in matchUrl:", e);
+    }
+});
 const respond = (req) => __awaiter(void 0, void 0, void 0, function* () {
-    return { statuscode: 400, data: "pararar" };
+    return { statusCode: 400, data: "pararar" };
 });

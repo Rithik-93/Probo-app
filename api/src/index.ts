@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
 import { v4 as uuidv4 } from 'uuid'
-import { queuePush, subscriber } from './redis';
+import connectRedis, { queuePush, subscriber } from './redis';
 
 const queueName = 'apiToEngine';
 
@@ -16,8 +16,10 @@ interface QueueData {
 const app = express()
 app.use(express.json())
 
+connectRedis()
 app.post("/asd", async (req, res) => {
-    forwardReq(req, res, "/asd")
+    const data = forwardReq(req, res, "/asd")
+    return 
 })
 
 const forwardReq = async (
@@ -36,13 +38,14 @@ const forwardReq = async (
   
   try {
     await new Promise(async(resolve) => {
-        const callbackFunc = async(message: string) => {
-            const { statusCode, data } = JSON.parse(message)
-            res.status(statusCode).send(data);
-            subscriber.unsubscribe(payload._id, callbackFunc)
-            resolve(undefined);
-        }
-        subscriber.subscribe(payload._id, callbackFunc);
+      const callbackFunc = (message: string) => {
+        const { statusCode, data } = JSON.parse(message);
+        res.status(statusCode).send(data);
+        subscriber.unsubscribe(payload._id, callbackFunc);
+        resolve(undefined);
+      };
+         subscriber.subscribe(payload._id, callbackFunc);
+        console.log(payload, queueName)
         await queuePush(queueName, JSON.stringify(payload))
     })
   } catch(e) {

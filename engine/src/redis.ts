@@ -3,16 +3,16 @@ import { createClient } from "redis";
 export const publisher = createClient()
 const consumer = createClient()
 
-const queueName : string= "apiToEngine"
+const queueName: string = "apiToEngine"
 
-interface QueueDataType  {
+interface QueueDataType {
     _id: string;
     endpoint: string;
     req: QUEUE_REQUEST;
-  }
+}
 
 interface QUEUE_REQUEST {
-    body : {
+    body: {
         userId?: string;
         amount?: string;
         stockSymbol?: string;
@@ -20,7 +20,7 @@ interface QUEUE_REQUEST {
         price?: number;
         stockType?: "yes" | "no"
     }
-    params : {
+    params: {
         userId?: string;
         stockSymbol?: string
     }
@@ -31,13 +31,13 @@ export const redisConnect = async () => {
         await consumer.connect()
         await publisher.connect()
         listenQueues(queueName)
-    } catch(e) {
-        console.log("err",e)
-    }
+    } catch (e) {
+        console.log("err", e)
+    } 
 }
 
-export const listenQueues = async (queueNames:string) => {
-    while(true) {
+export const listenQueues = async (queueNames: string) => {
+    while (true) {
         const payload = await consumer.brPop(queueNames, 0)
         if (payload) {
             const data = JSON.parse(payload.element)
@@ -46,15 +46,23 @@ export const listenQueues = async (queueNames:string) => {
     }
 }
 
-const matchUrl = (data:QueueDataType) => {
+
+const matchUrl = async (data: QueueDataType) => {
     let response;
-    switch(data.endpoint) {
-        case "/asd":
-        response = respond(data.req)
-        break
+    try {
+        switch (data.endpoint) {
+            case "/asd":
+                console.log("Processing endpoint /asd");
+                response = await respond(data.req);
+            break;
+        }
+        console.log("Publishing response:", response);
+        await publisher.publish(data._id, JSON.stringify(response));
+    } catch (e) {
+        console.error("Error in matchUrl:", e);
     }
 }
 
-const respond = async (req:QUEUE_REQUEST) => {
-   return { statuscode: 400, data:"pararar" }   
+const respond = async (req: QUEUE_REQUEST) => {
+    return { statusCode: 401, data: "pararar" }
 }

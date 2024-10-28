@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14,12 +37,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const uuid_1 = require("uuid");
-const redis_1 = require("./redis");
+const redis_1 = __importStar(require("./redis"));
 const queueName = 'apiToEngine';
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
+(0, redis_1.default)();
 app.post("/asd", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    forwardReq(req, res, "/asd");
+    const data = forwardReq(req, res, "/asd");
+    return;
 }));
 const forwardReq = (req, res, endpoint) => __awaiter(void 0, void 0, void 0, function* () {
     const payload = {
@@ -32,13 +57,14 @@ const forwardReq = (req, res, endpoint) => __awaiter(void 0, void 0, void 0, fun
     };
     try {
         yield new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
-            const callbackFunc = (message) => __awaiter(void 0, void 0, void 0, function* () {
+            const callbackFunc = (message) => {
                 const { statusCode, data } = JSON.parse(message);
                 res.status(statusCode).send(data);
                 redis_1.subscriber.unsubscribe(payload._id, callbackFunc);
                 resolve(undefined);
-            });
+            };
             redis_1.subscriber.subscribe(payload._id, callbackFunc);
+            console.log(payload, queueName);
             yield (0, redis_1.queuePush)(queueName, JSON.stringify(payload));
         }));
     }
