@@ -1,3 +1,4 @@
+import { INR_BALANCES, ORDERBOOK, STOCK_BALANCES } from "../DB/DB";
 import { MintReqType, QueueReq } from "../types/types";
 
 export const createUser = (req: QueueReq) => {
