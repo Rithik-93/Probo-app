@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import { redisConnect } from "./redis";
 
+export const queueName: string = "apiToEngine"
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8081;
