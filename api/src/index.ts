@@ -6,7 +6,7 @@ const app = express()
 app.use(express.json())
 
 connectRedis()
-app.post("/api/v1", router)
+app.use("/api/v1", router)
 
 const port = 3000;
 

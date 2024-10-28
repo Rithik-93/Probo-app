@@ -6,31 +6,32 @@ const queueName = 'apiToEngine';
 
 
 export const forwardReq = async (
-    req: Request,
-    res: Response,
-    endpoint: string
+  req: Request,
+  res: Response,
+  endpoint: string
 ) => {
   const payload: QueueData = {
     _id: uuidv4(),
     req: {
-        body: req.body,
-        params: req.params
+      body: req.body,
+      params: req.params
     },
     endpoint: endpoint
   }
   try {
-    await new Promise(async(resolve) => {
+    await new Promise(async (resolve) => {
       const callbackFunc = (message: string) => {
         const { statusCode, data } = JSON.parse(message);
         res.status(statusCode).send(data);
         subscriber.unsubscribe(payload._id, callbackFunc);
+        // console.log(payload)
         resolve(undefined);
       };
-         subscriber.subscribe(payload._id, callbackFunc);
-        console.log(payload, queueName)
-        await queuePush(queueName, JSON.stringify(payload))
+      subscriber.subscribe(payload._id, callbackFunc);
+      console.log(payload, queueName)
+      await queuePush(queueName, JSON.stringify(payload))
     })
-  } catch(e) {
+  } catch (e) {
     console.error("Failed to send data to Engine")
   }
 }
