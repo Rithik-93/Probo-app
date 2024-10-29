@@ -22,7 +22,7 @@ wss.on("connection", (ws: WebSocket) => {
   console.log("asdasd")
   ws.on("open", () => {
     console.log("OPEN")
-  })
+  });
 
   ws.on("message", async (data: string) => {
     console.log(data.toString());
@@ -40,7 +40,7 @@ wss.on("connection", (ws: WebSocket) => {
           subscriber.subscribe(orderbookId, (message) => {
 
             const orderbook = message.toString();
-            
+
             CLIENTS_LIST[orderbookId].forEach((client: any) => {
               client.send(orderbook)
             });
@@ -49,15 +49,17 @@ wss.on("connection", (ws: WebSocket) => {
           CLIENTS_LIST[orderbookId].push(ws)
         }
 
-      } else if (type === "UNSUBSCRIBE") {
-        if (CLIENTS_LIST[orderbookId].has(ws)) {
-          CLIENTS_LIST[orderbookId].delete(ws)
-        }
-        if (CLIENTS_LIST[orderbookId].size === 0) {
-          await subscriber.unsubscribe(orderbookId)
+      } else if (type == "UNSUBSCRIBE") {
+        CLIENTS_LIST[orderbookId] = CLIENTS_LIST[orderbookId].filter(
+          (item) => item != ws
+        );
+
+        if (CLIENTS_LIST[orderbookId].length === 0) {
+          await subscriber.unsubscribe(orderbookId);
           delete CLIENTS_LIST[orderbookId];
         }
       }
+
     }
-  })
-})
+  });
+});
