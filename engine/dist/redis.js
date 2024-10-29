@@ -9,16 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listenQueues = exports.redisConnect = exports.publisher = void 0;
+exports.publishOrderbook = exports.listenQueues = exports.redisConnect = exports.publisher = void 0;
 const redis_1 = require("redis");
+const router_1 = require("./router");
+const _1 = require(".");
+const DB_1 = require("./DB/DB");
 exports.publisher = (0, redis_1.createClient)();
 const consumer = (0, redis_1.createClient)();
-const queueName = "apiToEngine";
 const redisConnect = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield consumer.connect();
         yield exports.publisher.connect();
-        (0, exports.listenQueues)(queueName);
+        (0, exports.listenQueues)(_1.queueName);
     }
     catch (e) {
         console.log("err", e);
@@ -30,27 +32,38 @@ const listenQueues = (queueNames) => __awaiter(void 0, void 0, void 0, function*
         const payload = yield consumer.brPop(queueNames, 0);
         if (payload) {
             const data = JSON.parse(payload.element);
-            matchUrl(data);
+            (0, router_1.matchUrl)(data);
         }
     }
 });
 exports.listenQueues = listenQueues;
-const matchUrl = (data) => __awaiter(void 0, void 0, void 0, function* () {
-    let response;
+const publishOrderbook = (eventId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        switch (data.endpoint) {
-            case "/asd":
-                console.log("Processing endpoint /asd");
-                response = yield respond(data.req); // Add await here
-                break;
+        if (DB_1.ORDERBOOK[eventId]) {
+            const orderbook = getOrderBookByEvent(eventId);
+            yield exports.publisher.publish(eventId, JSON.stringify(orderbook));
         }
-        console.log("Publishing response:", response);
-        yield exports.publisher.publish(data._id, JSON.stringify(response));
+        return;
     }
-    catch (e) {
-        console.error("Error in matchUrl:", e);
+    catch (err) {
+        console.log(err);
+        return;
     }
 });
-const respond = (req) => __awaiter(void 0, void 0, void 0, function* () {
-    return { statusCode: 400, data: "pararar" };
-});
+exports.publishOrderbook = publishOrderbook;
+const getOrderBookByEvent = (eventId) => {
+    let orderbook;
+    const symbolExists = DB_1.ORDERBOOK[eventId];
+    if (symbolExists) {
+        orderbook = Object.fromEntries(Object.entries(symbolExists).map(([type, ordersMap]) => {
+            const orders = Array.from(ordersMap).map(([price, orders]) => {
+                return { price, quantity: orders.total };
+            });
+            return [[type], orders];
+        }));
+    }
+    else {
+        orderbook = { eventId: {} };
+    }
+    return orderbook;
+};

@@ -1,2 +1,4 @@
 node_modules
-dist
+api/dist
+engine/dist
+wss/dist
