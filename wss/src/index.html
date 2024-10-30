@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <button id="sendMessage">Send Message</button>
+    <div id="messages"></div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8080');
+
+        ws.onopen = () => {
+            console.log('Connected to WebSocket server');
+            ws.send('Hello Server!');
+        };
+
+        ws.onmessage = (event) => {
+            console.log('Received from server:', event.data);
+            document.getElementById('messages').innerText += event.data + '\n';
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        document.getElementById('sendMessage').addEventListener('click', () => {
+            ws.send({
+                type : "SUBSCRIBE",
+                orderbookId: "asdasdasdad2341234"
+            });
+        });
+    </script>
+</body>
+</html>

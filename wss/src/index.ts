@@ -1,8 +1,8 @@
 import { WebSocketServer, WebSocket } from 'ws'
-import { CLIENTS_LIST, EVENTS } from './Globals/global';
+import { CLIENTS_LIST, EVENTS } from './DB/db'
 import { createClient } from 'redis';
 
-const port = 3000;
+const port = 8080;
 
 const wss = new WebSocketServer({ port });
 const subscriber = createClient();
