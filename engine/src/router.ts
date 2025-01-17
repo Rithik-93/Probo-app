@@ -1,5 +1,6 @@
 import { createSymbol, createUser } from "./controllers/auth";
 import { getInrBalanceByUserId, getInrBalances, getStockBalancebyUserId, getStockBalances, onRamp } from "./controllers/balance";
+import { getOrderBook } from "./controllers/orders";
 import { publisher } from "./redis";
 import { QueueDataEle } from "./types/types";
 
@@ -28,6 +29,9 @@ export const matchUrl = async (data: QueueDataEle) => {
             case "/onramp/inr":
                 response = onRamp(data.req);
                 break;
+            case "/orderbook":
+                response = getOrderBook(data.req);
+                break
         }
         console.log("Publishing response:", response);
         await publisher.publish(data._id, JSON.stringify(response));
