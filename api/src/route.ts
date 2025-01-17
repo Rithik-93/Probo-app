@@ -40,8 +40,8 @@ router.get("/orderbook", async (req, res) => {
     await forwardReq(req, res, "/orderbook")
 })
 
-router.get("/:stockSymbol", async (req, res) => {
-    await forwardReq(req, res, "orderbook/stockSymbol")
+router.get("/orderbook/:stockSymbol", async (req, res) => {
+    await forwardReq(req, res, "/orderbook/:stockSymbol")
 });
 
 router.post("/order/buy", async (req, res) => {
