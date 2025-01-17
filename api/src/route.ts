@@ -32,8 +32,8 @@ router.get("/balances/inr/:userId", async (req, res) => {
 router.get("/balances/stock", async (req, res) => {
     await forwardReq(req, res, "/balances/stock");
 });
-router.get("/balances/stock/:stockSymbol", async (req, res) => {
-    await forwardReq(req, res, "/balances/stock/stockSymbol");
+router.get("/balances/stock/:userId", async (req, res) => {
+    await forwardReq(req, res, "/balances/stock/:userId");
 });
 
 router.get("/orderbook", async (req, res) => {

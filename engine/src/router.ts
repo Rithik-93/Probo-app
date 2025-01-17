@@ -22,7 +22,7 @@ export const matchUrl = async (data: QueueDataEle) => {
             case "/balances/stock":
                 response = getStockBalances(data.req);
                 break;
-            case "/balances/stock/:stockSymbol":
+            case "/balances/stock/:userId":
                 response = getStockBalancebyUserId(data.req);
                 break;
             case "/onramp/inr":

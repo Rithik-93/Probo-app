@@ -29,7 +29,7 @@ export const getStockBalancebyUserId = (req: QueueReq) => {
   const userId = req.params.userId as string;
 
   const userExists = INR_BALANCES[userId];
-  const stocksExists = STOCK_BALANCES[userId];
+  
 
   if (!userExists) {
     return {
@@ -37,15 +37,9 @@ export const getStockBalancebyUserId = (req: QueueReq) => {
       data: { error: `User with Id ${userId} does not exist` },
     };
   }
-  if (!stocksExists) {
-    return {
-      statusCode: 200,
-      data: { message: `No stocks for user with userId ${userId}` },
-    };
-  }
 
   return { statusCode: 200, data: STOCK_BALANCES[userId] };
-};
+}
 
 export const onRamp = (req: QueueReq) => {
   const userId = req.body.userId as string;
