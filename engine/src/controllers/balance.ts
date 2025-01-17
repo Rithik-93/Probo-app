@@ -18,7 +18,7 @@ export const getInrBalanceByUserId = (req: QueueReq) => {
   }
 
   const balance = INR_BALANCES[userId];
-  return { statusCode: 400, data: balance };
+  return { statusCode: 200, data: { balance } };
 };
 
 export const getStockBalances = (req: QueueReq) => {
