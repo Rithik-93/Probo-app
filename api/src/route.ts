@@ -27,7 +27,7 @@ router.get("/balances/inr", async (req, res) => {
     await forwardReq(req, res, "/balances/inr");
 });
 router.get("/balances/inr/:userId", async (req, res) => {
-    await forwardReq(req, res, "/balances/inr/userId");
+    await forwardReq(req, res, "/balances/inr/:userId");
 });
 router.get("/balances/stock", async (req, res) => {
     await forwardReq(req, res, "/balances/stock");

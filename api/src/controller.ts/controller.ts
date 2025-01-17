@@ -24,7 +24,6 @@ export const forwardReq = async (
         const { statusCode, data } = JSON.parse(message);
         res.status(statusCode).send(data);
         subscriber.unsubscribe(payload._id, callbackFunc);
-        // console.log(payload)
         resolve(undefined);
       };
       subscriber.subscribe(payload._id, callbackFunc);
