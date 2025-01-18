@@ -81,7 +81,7 @@ export const buyOrder = (req: QueueReq) => {
 
   if (availableQuantity == 0) {
     initiateSellOrder(stockSymbol, stockType, price, quantity, userId, "buy");
-    publishOrderbook(stockSymbol);
+    // publishOrderbook(stockSymbol);
     return { statusCode: 200, data: { message: "Bid Submitted" } };
   }
 

@@ -33,7 +33,6 @@ export const publishOrderbook = async (eventId: string) => {
 
       const orderbook = getOrderBookByEvent(eventId);
       console.log('ORDERBOOK-----------------', orderbook);
-      console.log("asdsss");
       await publisher.publish(eventId, JSON.stringify(orderbook));
       console.log("asdasdasd");
     }
