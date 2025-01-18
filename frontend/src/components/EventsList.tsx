@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
+import { Badge } from "../components/ui/badge"
 
 interface Order {
   userId: string
@@ -14,7 +14,7 @@ interface EventData {
 }
 
 interface EventListProps {
-  events: Record<string, EventData>
+  events: Record<string, any>
 }
 
 export default function EventList({ events }: EventListProps) {
