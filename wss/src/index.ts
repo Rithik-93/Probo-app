@@ -36,6 +36,8 @@ wss.on("connection", (ws: WebSocket) => {
           
           EVENTS.push(orderbookId)
           CLIENTS_LIST[orderbookId] = [ws];
+          console.log(CLIENTS_LIST);
+          
 
           subscriber.subscribe(orderbookId, (message) => {
 

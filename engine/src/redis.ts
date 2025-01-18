@@ -29,12 +29,11 @@ export const listenQueues = async (queueNames: string) => {
 export const publishOrderbook = async (eventId: string) => {
   try {
     if (ORDERBOOK[eventId]) {
-      console.log("asd");
+      // console.log("asd");
 
       const orderbook = getOrderBookByEvent(eventId);
-      console.log('ORDERBOOK-----------------', orderbook);
       await publisher.publish(eventId, JSON.stringify(orderbook));
-      console.log("asdasdasd");
+      // console.log("asdasdasd");
     }
     return;
   } catch (err) {
@@ -46,6 +45,7 @@ export const publishOrderbook = async (eventId: string) => {
 const getOrderBookByEvent = (eventId: string) => {
   let orderbook;
   const symbolExists = ORDERBOOK[eventId];
+  // console.log('ORDERBOOK-----------------', symbolExists);
 
 
   if (symbolExists) {

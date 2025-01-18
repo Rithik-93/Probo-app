@@ -2,6 +2,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { EventData } from "../components/EventsList";
 import EventCard from "../components/EventsList";
+import EventDetails from "./EventDetails";
 
 export default function Events() {
     const fetchData = () =>
@@ -28,7 +29,7 @@ export default function Events() {
     return (
         <div className="container mx-auto p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {Object.entries(data).map(([symbol, data]) => (
-                <EventCard key={symbol} symbol={symbol} data={data as EventData} />
+                <Event key={symbol} symbol={symbol} data={data as EventData} />
             ))}
         </div>
     );

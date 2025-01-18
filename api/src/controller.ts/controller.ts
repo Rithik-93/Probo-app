@@ -22,12 +22,14 @@ export const forwardReq = async (
     await new Promise(async (resolve) => {
       const callbackFunc = (message: string) => {
         const { statusCode, data } = JSON.parse(message);
+        console.log(statusCode,data,"-------------------------------------------------");
+        
         res.status(statusCode).send(data);
         subscriber.unsubscribe(payload._id, callbackFunc);
         resolve(undefined);
       };
       subscriber.subscribe(payload._id, callbackFunc);
-      console.log(payload, queueName)
+      // console.log(payload, queueName)
       await queuePush(queueName, JSON.stringify(payload))
     })
   } catch (e) {

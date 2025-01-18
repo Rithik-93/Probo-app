@@ -27,7 +27,9 @@ export const viewOrders = (req: QueueReq) => {
       data: { error: `Stock with stockSymbol ${stockSymbol} does not exist` },
     };
   }
-  return { statusCode: 200, data: ORDERBOOK[stockSymbol] };
+  // console.log("------------------------------------",symbolExists);
+  
+  return { statusCode: 200, data: symbolExists };
 };
 
 export const buyOrder = (req: QueueReq) => {
@@ -129,6 +131,8 @@ export const buyOrder = (req: QueueReq) => {
       break;
     }
   }
+  console.log(ORDERBOOK);
+  
 
   return {
     statusCode: 200,
