@@ -1,6 +1,6 @@
 import { createSymbol, createUser } from "./controllers/auth";
 import { getInrBalanceByUserId, getInrBalances, getStockBalancebyUserId, getStockBalances, onRamp } from "./controllers/balance";
-import { getOrderBook, viewOrders } from "./controllers/orders";
+import { buyOrder, getOrderBook, viewOrders } from "./controllers/orders";
 import { publisher } from "./redis";
 import { QueueDataEle } from "./types/types";
 
@@ -35,6 +35,8 @@ export const matchUrl = async (data: QueueDataEle) => {
             case "/orderbook/:stockSymbol":
                 response = viewOrders(data.req);
                 break;
+            case "/order/buy":
+                response = buyOrder(data.req);
         }
         console.log("Publishing response:", response);
         await publisher.publish(data._id, JSON.stringify(response));

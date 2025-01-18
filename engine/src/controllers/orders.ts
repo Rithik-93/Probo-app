@@ -45,6 +45,7 @@ export const buyOrder = (req: QueueReq) => {
       data: { error: `User with user Id ${userId} does not exist` },
     };
   }
+
   if (!symbolExists) {
     return {
       statusCode: 400,
@@ -80,6 +81,7 @@ export const buyOrder = (req: QueueReq) => {
 
   if (availableQuantity == 0) {
     initiateSellOrder(stockSymbol, stockType, price, quantity, userId, "buy");
+    publishOrderbook(stockSymbol);
     return { statusCode: 200, data: { message: "Bid Submitted" } };
   }
 
@@ -104,8 +106,10 @@ export const buyOrder = (req: QueueReq) => {
     ) {
       ORDERBOOK[stockSymbol][stockType].delete(orderPrice);
     }
+console.log("asdasdasdasdsadasdasdasdasdasdsad");
 
     publishOrderbook(stockSymbol);
+    console.log("--------------------------------------------------------");
 
     if (requiredQuantity == 0) {
       break;

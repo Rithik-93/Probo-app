@@ -33,7 +33,8 @@ wss.on("connection", (ws: WebSocket) => {
         const isSocketSubscribed = EVENTS.find(x => x == orderbookId)
 
         if (!isSocketSubscribed) {
-
+          console.log("hereeeeeeee");
+          
           EVENTS.push(orderbookId)
           CLIENTS_LIST[orderbookId] = [ws];
 
