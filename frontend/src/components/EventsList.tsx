@@ -1,63 +1,75 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-import { Badge } from "../components/ui/badge"
+import { useNavigate } from "react-router-dom";
+import { BarChart3 } from "lucide-react";
+import { Card, CardContent, CardHeader } from "../components/ui/card";
 
 interface Order {
-  userId: string
-  id: string
-  quantity: number
-  type: string
+  userId: string;
+  id: string;
+  quantity: number;
+  type: string;
 }
 
-interface EventData {
-  yes: Record<string, any>
-  no: Record<string, { total: number; orders: Order[] }>
+interface PriceData {
+  total: number;
+  orders: Order[];
 }
 
-interface EventListProps {
-  events: Record<string, any>
+export interface EventData {
+  yes: Record<string, PriceData>;
+  no: Record<string, PriceData>;
 }
 
-export default function EventList({ events }: EventListProps) {
+interface EventCardProps {
+  symbol: string;
+  data: EventData;
+}
+
+export default function EventCard({ symbol, data }: EventCardProps) {
+  const navigate = useNavigate();
+
+  const getTotalOrders = (orders: Record<string, PriceData>) => {
+    return Object.values(orders).reduce((acc, curr) => acc + curr.total, 0);
+  };
+
+  const getPrice = (orders: Record<string, PriceData>) => {
+    const prices = Object.keys(orders);
+    return prices.length > 0 ? Number(prices[0]) : 0;
+  };
+
+  const yesOrders = getTotalOrders(data.yes);
+  const noOrders = getTotalOrders(data.no);
+  const totalTraders = yesOrders + noOrders;
+
+  const yesPrice = getPrice(data.yes);
+  const noPrice = getPrice(data.no);
+
+  const handleCardClick = () => {
+    navigate(`/event/${symbol}`);
+  };
+
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {Object.entries(events).map(([eventName, eventData]) => (
-        <Card key={eventName}>
-          <CardHeader>
-            <CardTitle>{eventName}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {['yes', 'no'].map((opinion) => (
-                <div key={opinion}>
-                  <h3 className="font-semibold mb-2 capitalize">{opinion}</h3>
-                  {Object.keys(eventData[opinion]).length === 0 ? (
-                    <p className="text-sm text-gray-500">No orders</p>
-                  ) : (
-                    Object.entries(eventData[opinion]).map(([price, data]) => (
-                      <div key={price} className="mb-2">
-                        <p className="text-sm">
-                          Price: {price} | Total Orders: {data.total}
-                        </p>
-                        <ul className="list-disc list-inside text-sm">
-                          {data.orders.map((order) => (
-                            <li key={order.id}>
-                              User: {order.userId} | Quantity: {order.quantity}
-                              <Badge variant="outline" className="ml-2">
-                                {order.type}
-                              </Badge>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  )
+    <Card
+      className="max-w-md overflow-hidden cursor-pointer"
+      onClick={handleCardClick}
+    >
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <BarChart3 className="h-4 w-4" />
+          <span>{totalTraders} traders</span>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex gap-3">
+          <div className="relative h-12 w-12 overflow-hidden rounded-md"></div>
+          <h3 className="flex-1 text-lg font-medium leading-tight">{symbol}</h3>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-blue-50 text-blue-600 min-h-10 rounded-20">
+            Yes ₹{yesPrice || "0.0"}
+          </div>
+          <div className="bg-red-50 text-red-600">No ₹{noPrice || "0.0"}</div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
-

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import EventList from "../components/EventsList";
+import { EventData } from "../components/EventsList";
+import EventCard from "../components/EventsList";
 
 export default function Events() {
     const fetchData = () =>
@@ -11,8 +12,10 @@ export default function Events() {
     const { data, isFetching, isError, error } = useQuery({
         queryKey: ["orderbookData"],
         queryFn: fetchData,
-        staleTime: 60000, // Optional
+        staleTime: 60000,
     });
+
+    console.log(JSON.stringify(data));
 
     if (isFetching) {
         return <div>Loading...</div>;
@@ -23,9 +26,10 @@ export default function Events() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-6">Opinion Trading Platform</h1>
-            <EventList events={data} />
+        <div className="container mx-auto p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {Object.entries(data).map(([symbol, data]) => (
+                <EventCard key={symbol} symbol={symbol} data={data as EventData} />
+            ))}
         </div>
     );
 }
