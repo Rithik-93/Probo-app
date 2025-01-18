@@ -106,10 +106,8 @@ export const buyOrder = (req: QueueReq) => {
     ) {
       ORDERBOOK[stockSymbol][stockType].delete(orderPrice);
     }
-console.log("asdasdasdasdsadasdasdasdasdasdsad");
 
     publishOrderbook(stockSymbol);
-    console.log("--------------------------------------------------------");
 
     if (requiredQuantity == 0) {
       break;
@@ -260,8 +258,6 @@ export const cancelOrder = (req: QueueReq) => {
       data: { error: `Stock with stockSymbol ${stockSymbol} does not exist` },
     };
   }
-
-  // console.log(ORDERBOOK[stockSymbol][stockType]);
 
   return { statusCode: 200, data: { message: "Sell order canceled" } };
 };
