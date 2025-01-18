@@ -30,8 +30,9 @@ export const publishOrderbook = async (eventId: string) => {
   try {
     if (ORDERBOOK[eventId]) {
       console.log("asd");
-      
+
       const orderbook = getOrderBookByEvent(eventId);
+      console.log('ORDERBOOK-----------------', orderbook);
       console.log("asdsss");
       await publisher.publish(eventId, JSON.stringify(orderbook));
       console.log("asdasdasd");
@@ -46,6 +47,7 @@ export const publishOrderbook = async (eventId: string) => {
 const getOrderBookByEvent = (eventId: string) => {
   let orderbook;
   const symbolExists = ORDERBOOK[eventId];
+
 
   if (symbolExists) {
     orderbook = Object.fromEntries(
