@@ -55,7 +55,7 @@ export default function EventCard({ symbol, data }: EventCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-center gap-1 text-sm text-muted-foreground">
           <BarChart3 className="h-4 w-4" />
-          <span>{totalTraders} traders</span>
+          <span>{totalTraders}traders</span>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
