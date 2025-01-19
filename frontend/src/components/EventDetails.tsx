@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { ArrowUp, ArrowDown, BarChart3 } from "lucide-react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { connectWS } from "@/actions/connectWs";
 
 type Order = {
   userId: string;
@@ -23,10 +24,8 @@ type EventData = {
 
 const EventDetails: React.FC = () => {
   const { eventName } = useParams<{ eventName: string }>();
-  const [stockData, setStockData] = useState<EventData | null>(null);
   const [wsData, setWsData] = useState<EventData | null>(null);
 
-  // Fetch initial data
   const fetchData = async (): Promise<EventData> => {
     const response = await axios.get(`http://localhost:3000/api/v1/orderbook/${eventName}`);
     return response.data;
@@ -37,37 +36,13 @@ const EventDetails: React.FC = () => {
     queryFn: fetchData
   });
 
-  // WebSocket logic
   useEffect(() => {
     const socket = new WebSocket('ws://localhost:8080');
-    
-    socket.onopen = () => {
-      console.log('WebSocket connection established');
-      
-      const message = {
-        type: "SUBSCRIBE",
-        orderbookId: eventName
-      };
-      
-      socket.send(JSON.stringify(message));
-    };
 
-    socket.onmessage = (event) => {
-      const rawData = event.data;
-      const message = JSON.parse(rawData);
-      console.log(JSON.stringify(message));
-      setWsData(message);
-    };
+    if (eventName) {
+      connectWS({socket, eventName, setWsData});
+    }
 
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket connection closed.");
-    };
-
-    // Clean up WebSocket connection on unmount
     return () => {
       socket.close();
     };
