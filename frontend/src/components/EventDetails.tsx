@@ -4,6 +4,7 @@ import { ArrowUp, ArrowDown, BarChart3 } from "lucide-react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { connectWS } from "@/actions/connectWs";
+import useOrderData from "@/hooks/useOrderData";
 
 type Order = {
   userId: string;
@@ -47,14 +48,10 @@ const EventDetails: React.FC = () => {
       socket.close();
     };
   }, [eventName]);
+  
+  const mergedData = wsData ? { ...data, ...wsData } : data;
 
-  const getTotalOrders = (orders: Record<string, PriceData>) =>
-    Object.values(orders).reduce((acc, curr) => acc + curr.total, 0);
-
-  const getPrice = (orders: Record<string, PriceData>) => {
-    const prices = Object.keys(orders);
-    return prices.length > 0 ? Number(prices[0]) : 0;
-  };
+  const { yesOrders, noOrders, totalTraders, yesPrice, noPrice } = useOrderData(mergedData || { yes: {}, no: {} });
 
   if (isFetching) {
     return <div className="text-center">Loading...</div>;
@@ -68,14 +65,6 @@ const EventDetails: React.FC = () => {
     return <div className="text-center">No data available.</div>;
   }
 
-  const mergedData = wsData ? { ...data, ...wsData } : data;
-
-  const yesOrders = getTotalOrders(mergedData.yes);
-  const noOrders = getTotalOrders(mergedData.no);
-  const totalTraders = yesOrders + noOrders;
-
-  const yesPrice = getPrice(mergedData.yes);
-  const noPrice = getPrice(mergedData.no);
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden p-6">
@@ -115,8 +104,8 @@ const EventDetails: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(mergedData.yes).map(([price, priceData]) =>
-              priceData.orders.map((order) => (
+            {Object.entries(yesOrders).map(([price, priceData]) =>
+              priceData.orders.map((order: Order) => (
                 <tr key={order.id} className="border-b">
                   <td className="px-4 py-2">Yes</td>
                   <td className="px-4 py-2">₹{price}</td>
@@ -125,14 +114,14 @@ const EventDetails: React.FC = () => {
                 </tr>
               ))
             )}
-            {Object.entries(mergedData.no).map(([price, priceData]) =>
-              priceData.orders.map((order) => (
-                <tr key={order.id} className="border-b">
-                  <td className="px-4 py-2">No</td>
-                  <td className="px-4 py-2">₹{price}</td>
-                  <td className="px-4 py-2">{order.quantity}</td>
-                  <td className="px-4 py-2">{order.userId}</td>
-                </tr>
+            {Object.entries(noOrders).map(([price, priceData]: [string, PriceData]) =>
+              priceData.orders.map((order: Order) => (
+              <tr key={order.id} className="border-b">
+                <td className="px-4 py-2">No</td>
+                <td className="px-4 py-2">₹{price}</td>
+                <td className="px-4 py-2">{order.quantity}</td>
+                <td className="px-4 py-2">{order.userId}</td>
+              </tr>
               ))
             )}
           </tbody>
