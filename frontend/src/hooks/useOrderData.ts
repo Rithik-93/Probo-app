@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 
 interface PriceData {
   total: number;
-  // Add any other properties related to PriceData
 }
 
 interface MergedData {
