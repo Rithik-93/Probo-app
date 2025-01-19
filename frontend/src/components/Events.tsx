@@ -2,6 +2,8 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { EventData } from "../components/EventsList";
 import EventCard from "../components/EventsList";
+import { EventsLoading } from "./EventsLoading";
+import { EventsError } from "./Error";
 
 export default function Events() {
     const fetchData = () =>
@@ -9,7 +11,7 @@ export default function Events() {
             .get("http://localhost:3000/api/v1/orderbook")
             .then(response => response.data);
 
-    const { data, isFetching, isError, error } = useQuery({
+    const { data, isFetching, isError} = useQuery({
         queryKey: ["orderbookData"],
         queryFn: fetchData,
         staleTime: 60000,
@@ -18,11 +20,11 @@ export default function Events() {
     console.log(JSON.stringify(data));
 
     if (isFetching) {
-        return <div>Loading...</div>;
+        return <div className="min-h-screen flex text-black font-extrabold text-xl justify-center items-center">{<EventsLoading/>}</div>;
     }
 
     if (isError) {
-        return <div>Error occurred: {error.message || "Something went wrong"}</div>;
+        return <div className="text-black font-extrabold text-xl flex justify-center items-center min-h-screen">{<EventsError/>}</div>;
     }
 
     return (
