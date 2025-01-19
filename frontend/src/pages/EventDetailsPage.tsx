@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { connectWS } from "@/actions/connectWs";
-import { EventDetails } from "./EventDetails";
+import { connectWS } from "../actions/connectWs";
+import { EventDetails } from "../components/EventDetails";
 
 export type Order = {
   userId: string;

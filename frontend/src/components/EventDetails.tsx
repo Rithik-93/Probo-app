@@ -1,7 +1,7 @@
-import useOrderData from "@/hooks/useOrderData";
+import useOrderData from "../hooks/useOrderData";
 import { ArrowUp, ArrowDown, BarChart3 } from "lucide-react";
 import { EventData } from "./EventsList";
-import { Order, PriceData } from "./EventDetailsPage";
+import { Order, PriceData } from "../pages/EventDetailsPage";
 
 export const EventDetails = ({ mergedData, eventName }: { mergedData: EventData, eventName: string }) => {
 

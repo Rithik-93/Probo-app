@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import Events from './components/Events';
+import Events from './pages/Events';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import EventDetails from './components/EventDetailsPage';
-import LandingPage from './components/Landing';
+import LandingPage from './pages/Landing';
+import EventDetailsPage from './pages/EventDetailsPage';
 
 function App() {
   const queryClient = new QueryClient();
@@ -12,9 +12,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandingPage/>}/>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/events" element={<Events />} />
-          <Route path="/event/:eventName" element={<EventDetails/>}/>
+          <Route path="/event/:eventName" element={<EventDetailsPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

@@ -2,8 +2,8 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { EventData } from "../components/EventsList";
 import EventCard from "../components/EventsList";
-import { EventsLoading } from "./EventsLoading";
-import { EventsError } from "./Error";
+import { EventsLoading } from "../components/Loading/EventsLoading";
+import { EventsError } from "../components/Loading/Error";
 
 export default function Events() {
     const fetchData = () =>
