@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ArrowUp, ArrowDown, BarChart3 } from "lucide-react";
 import axios from "axios";
@@ -23,16 +23,55 @@ type EventData = {
 
 const EventDetails: React.FC = () => {
   const { eventName } = useParams<{ eventName: string }>();
+  const [stockData, setStockData] = useState<EventData | null>(null);
+  const [wsData, setWsData] = useState<EventData | null>(null);
 
+  // Fetch initial data
   const fetchData = async (): Promise<EventData> => {
     const response = await axios.get(`http://localhost:3000/api/v1/orderbook/${eventName}`);
-    return response.data
+    return response.data;
   }
 
   const { data, isFetching, isError, error } = useQuery({
-    queryKey: ['eventDetail'],
+    queryKey: ['eventDetail', eventName],
     queryFn: fetchData
-  })
+  });
+
+  // WebSocket logic
+  useEffect(() => {
+    const socket = new WebSocket('ws://localhost:8080');
+    
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+      
+      const message = {
+        type: "SUBSCRIBE",
+        orderbookId: eventName
+      };
+      
+      socket.send(JSON.stringify(message));
+    };
+
+    socket.onmessage = (event) => {
+      const rawData = event.data;
+      const message = JSON.parse(rawData);
+      console.log(JSON.stringify(message));
+      setWsData(message);
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket connection closed.");
+    };
+
+    // Clean up WebSocket connection on unmount
+    return () => {
+      socket.close();
+    };
+  }, [eventName]);
 
   const getTotalOrders = (orders: Record<string, PriceData>) =>
     Object.values(orders).reduce((acc, curr) => acc + curr.total, 0);
@@ -54,12 +93,14 @@ const EventDetails: React.FC = () => {
     return <div className="text-center">No data available.</div>;
   }
 
-  const yesOrders = getTotalOrders(data.yes);
-  const noOrders = getTotalOrders(data.no);
+  const mergedData = wsData ? { ...data, ...wsData } : data;
+
+  const yesOrders = getTotalOrders(mergedData.yes);
+  const noOrders = getTotalOrders(mergedData.no);
   const totalTraders = yesOrders + noOrders;
 
-  const yesPrice = getPrice(data.yes);
-  const noPrice = getPrice(data.no);
+  const yesPrice = getPrice(mergedData.yes);
+  const noPrice = getPrice(mergedData.no);
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden p-6">
@@ -99,7 +140,7 @@ const EventDetails: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(data.yes).map(([price, priceData]) =>
+            {Object.entries(mergedData.yes).map(([price, priceData]) =>
               priceData.orders.map((order) => (
                 <tr key={order.id} className="border-b">
                   <td className="px-4 py-2">Yes</td>
@@ -109,7 +150,7 @@ const EventDetails: React.FC = () => {
                 </tr>
               ))
             )}
-            {Object.entries(data.no).map(([price, priceData]) =>
+            {Object.entries(mergedData.no).map(([price, priceData]) =>
               priceData.orders.map((order) => (
                 <tr key={order.id} className="border-b">
                   <td className="px-4 py-2">No</td>
