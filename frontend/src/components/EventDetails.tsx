@@ -1,37 +1,58 @@
-import React from 'react';
-import { BarChart3, ArrowUp, ArrowDown } from 'lucide-react';
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { ArrowUp, ArrowDown, BarChart3 } from "lucide-react";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
-interface Order {
+type Order = {
   userId: string;
   id: string;
   quantity: number;
   type: string;
-}
+};
 
-interface PriceData {
+type PriceData = {
   total: number;
   orders: Order[];
-}
+};
 
-interface EventData {
+type EventData = {
   yes: Record<string, PriceData>;
   no: Record<string, PriceData>;
-}
+};
 
-interface EventDetailsProps {
-  symbol: string;
-  data: EventData;
-}
+const EventDetails: React.FC = () => {
+  const { eventName } = useParams<{ eventName: string }>();
 
-const EventDetails: React.FC<EventDetailsProps> = ({ symbol, data }) => {
-  const getTotalOrders = (orders: Record<string, PriceData>) => {
-    return Object.values(orders).reduce((acc, curr) => acc + curr.total, 0);
-  };
+  const fetchData = async (): Promise<EventData> => {
+    const response = await axios.get(`http://localhost:3000/api/v1/orderbook/${eventName}`);
+    return response.data
+  }
+
+  const { data, isFetching, isError, error } = useQuery({
+    queryKey: ['eventDetail'],
+    queryFn: fetchData
+  })
+
+  const getTotalOrders = (orders: Record<string, PriceData>) =>
+    Object.values(orders).reduce((acc, curr) => acc + curr.total, 0);
 
   const getPrice = (orders: Record<string, PriceData>) => {
     const prices = Object.keys(orders);
     return prices.length > 0 ? Number(prices[0]) : 0;
   };
+
+  if (isFetching) {
+    return <div className="text-center">Loading...</div>;
+  }
+
+  if (isError) {
+    return <div className="text-center text-red-500">{error.toString()}</div>;
+  }
+
+  if (!data) {
+    return <div className="text-center">No data available.</div>;
+  }
 
   const yesOrders = getTotalOrders(data.yes);
   const noOrders = getTotalOrders(data.no);
@@ -43,7 +64,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ symbol, data }) => {
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Event: {symbol}</h2>
+        <h2 className="text-2xl font-bold">Event: {eventName}</h2>
         <div className="flex items-center gap-1 text-sm text-gray-500">
           <BarChart3 className="h-4 w-4" />
           <span>{totalTraders} traders</span>
@@ -51,18 +72,18 @@ const EventDetails: React.FC<EventDetailsProps> = ({ symbol, data }) => {
       </div>
 
       <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-2">Will {symbol} go up?</h3>
+        <h3 className="text-xl font-semibold mb-2">Will {eventName} go up?</h3>
         <p className="text-gray-600">Predict the outcome and trade your opinion!</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-8">
         <button className="bg-blue-50 text-blue-600 hover:bg-blue-100 py-4 rounded text-lg flex items-center justify-center">
           <ArrowUp className="mr-2 h-6 w-6" />
-          Yes ₹{yesPrice || "0.0"}
+          Yes ₹{yesPrice.toFixed(2)}
         </button>
         <button className="bg-red-50 text-red-600 hover:bg-red-100 py-4 rounded text-lg flex items-center justify-center">
           <ArrowDown className="mr-2 h-6 w-6" />
-          No ₹{noPrice || "0.0"}
+          No ₹{noPrice.toFixed(2)}
         </button>
       </div>
 
@@ -106,4 +127,3 @@ const EventDetails: React.FC<EventDetailsProps> = ({ symbol, data }) => {
 };
 
 export default EventDetails;
-

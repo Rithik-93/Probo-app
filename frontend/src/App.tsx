@@ -12,7 +12,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/events" element={<Events />} />
-          {/* <Route path='/event/:symbol' element={<EventDetails/>}/> */}
+          <Route path="/event/:eventName" element={<EventDetails/>}/>
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
