@@ -28,6 +28,10 @@ wss.on("connection", (ws: WebSocket) => {
     console.log(data.toString());
     const { type, orderbookId } = JSON.parse(data.toString())
     if (type && orderbookId) {
+      
+      setInterval(() => {
+        console.log(CLIENTS_LIST[orderbookId].length),"insideeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+      },2000)
       if (type === "SUBSCRIBE") {
 
         const isSocketSubscribed = EVENTS.find(x => x == orderbookId)
@@ -37,7 +41,7 @@ wss.on("connection", (ws: WebSocket) => {
           EVENTS.push(orderbookId)
           CLIENTS_LIST[orderbookId] = [ws];
           
-          console.log(CLIENTS_LIST);
+          console.log(CLIENTS_LIST[orderbookId].length);
           
           subscriber.subscribe(orderbookId, (message) => {
 
@@ -60,6 +64,7 @@ wss.on("connection", (ws: WebSocket) => {
           await subscriber.unsubscribe(orderbookId);
           delete CLIENTS_LIST[orderbookId];
         }
+        console.log(CLIENTS_LIST[orderbookId].length);
       }
 
     }

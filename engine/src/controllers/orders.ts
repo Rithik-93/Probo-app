@@ -27,7 +27,6 @@ export const viewOrders = (req: QueueReq) => {
       data: { error: `Stock with stockSymbol ${stockSymbol} does not exist` },
     };
   }
-  // console.log("------------------------------------",symbolExists);
   
   return { statusCode: 200, data: symbolExists };
 };
