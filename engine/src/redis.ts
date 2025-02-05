@@ -2,9 +2,13 @@ import { createClient } from "redis";
 import { matchUrl } from "./router";
 import { queueName } from ".";
 import { ORDERBOOK } from "./DB/DB";
+import { config } from 'dotenv'
 
-export const publisher = createClient()
-const consumer = createClient()
+config();
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379'
+
+export const publisher = createClient({url: REDIS_URL})
+const consumer = createClient({url: REDIS_URL})
 
 export const redisConnect = async () => {
   try {
@@ -29,12 +33,10 @@ export const listenQueues = async (queueNames: string) => {
 export const publishOrderbook = async (eventId: string) => {
   try {
     if (ORDERBOOK[eventId]) {
-      // console.log("asd");
 
       const orderbook = getOrderBookByEvent(eventId);
       console.log(orderbook);
       await publisher.publish(eventId, JSON.stringify(orderbook));
-      // console.log("asdasdasd");
     }
     return;
   } catch (err) {
@@ -46,7 +48,6 @@ export const publishOrderbook = async (eventId: string) => {
 const getOrderBookByEvent = (eventId: string) => {
   let orderbook;
   const symbolExists = ORDERBOOK[eventId];
-  // console.log('ORDERBOOK-----------------', symbolExists);
 
 
   if (symbolExists) {
