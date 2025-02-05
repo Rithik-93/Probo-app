@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: probo-ws
+spec:
+  type: LoadBalancer
+  selector:
+    app: probo-ws
+  ports:
+    - protocol: TCP
+      port: 82
+      targetPort: 8080
