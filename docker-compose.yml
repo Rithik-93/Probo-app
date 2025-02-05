@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  probo-api:
+    build:
+      context: ./api
+    container_name: probo-api
+    image: rithik933/probo-api:v1
+    environment:
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - '3000:3000'
+      - '5555:5555'
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - probo-network
+
+  probo-engine:
+    image: rithik933/probo-engine:v1
+    container_name: probo-engine
+    environment:
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - '3001:3001'
+      - '5556:5555'
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - probo-network
+
+  probo-ws:
+    image: rithik933/probo-ws:v1
+    container_name: probo-ws
+    environment:
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - '8080:8080'
+    depends_on:
+      redis:
+        condition: service_healthy   
+    networks:
+      - probo-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    networks:
+      - probo-network
+
+volumes:
+  redis-data:
+
+networks:
+  probo-network:
