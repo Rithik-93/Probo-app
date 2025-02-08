@@ -4,8 +4,10 @@ import { createClient } from 'redis';
 
 const port = 8080;
 
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379'
+
 const wss = new WebSocketServer({ port });
-const subscriber = createClient();
+const subscriber = createClient({ url: REDIS_URL });
 
 const connectRedis = async () => {
   try {
@@ -28,18 +30,18 @@ wss.on("connection", (ws: WebSocket) => {
     console.log(data.toString());
     const { type, orderbookId } = JSON.parse(data.toString())
     if (type && orderbookId) {
-      
+
       if (type === "SUBSCRIBE") {
 
         const isSocketSubscribed = EVENTS.find(x => x == orderbookId)
 
         if (!isSocketSubscribed) {
-          
+
           EVENTS.push(orderbookId)
           CLIENTS_LIST[orderbookId] = [ws];
-          
+
           console.log(CLIENTS_LIST[orderbookId].length);
-          
+
           subscriber.subscribe(orderbookId, (message) => {
 
             const orderbook = message.toString();
