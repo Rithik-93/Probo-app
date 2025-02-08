@@ -45,7 +45,7 @@ services:
       - probo-network
 
   redis:
-    image: redis:alpine
+    image: redis:latest
     container_name: redis
     restart: always
     ports:

@@ -16,7 +16,6 @@ export const getOrderBook = (req: QueueReq) => {
   return { statusCode: 200, data: formattedOrderbook };
 };
 
-
 export const viewOrders = (req: QueueReq) => {
   const stockSymbol = req.params.stockSymbol as string;
 

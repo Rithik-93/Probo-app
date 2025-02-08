@@ -19,9 +19,6 @@ spec:
           image: rithik933/probo-api:v1
           ports:
             - containerPort: 3000
-          env:
-            - name: REDIS_URL
-              value: redis://redis:6379
           resources:
             requests:
               cpu: "100m"
@@ -29,16 +26,4 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 3000
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 3000
-            initialDelaySeconds: 3
-            periodSeconds: 5
       restartPolicy: Always

@@ -19,6 +19,3 @@ spec:
           image: rithik933/probo-ws:v1
           ports:
             - containerPort: 8080
-          env:
-            - name: REDIS_URL
-              value: redis://redis:6379
