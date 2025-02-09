@@ -1,10 +1,14 @@
 import { WebSocketServer, WebSocket } from 'ws'
 import { CLIENTS_LIST, EVENTS } from './DB/db'
 import { createClient } from 'redis';
+import { config } from 'dotenv';
+
+config()
 
 const port = 8080;
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379'
+console.log(REDIS_URL);
 
 const wss = new WebSocketServer({ port });
 const subscriber = createClient({ url: REDIS_URL });

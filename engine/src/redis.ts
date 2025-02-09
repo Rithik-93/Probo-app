@@ -6,6 +6,8 @@ import { config } from 'dotenv'
 
 config();
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379'
+console.log(REDIS_URL);
+
 
 export const publisher = createClient({url: REDIS_URL})
 const consumer = createClient({url: REDIS_URL})
