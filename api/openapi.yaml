@@ -6,12 +6,12 @@ info:
 servers:
   - url: https://probo-app.onrender.com/api/v1
 paths:
-  /users:
+  /user/create/{userId}:  # Path parameter for userId
     post:
       summary: Create a new user
       parameters:
         - name: userId
-          in: query
+          in: path  # Path parameter
           required: true
           schema:
             type: string
@@ -20,12 +20,13 @@ paths:
           description: User created
         404:
           description: User already exists or invalid user ID
-  /symbols:
+
+  /symbol/create/{stockSymbol}:  # Path parameter for stockSymbol
     post:
       summary: Create a new stock symbol
       parameters:
         - name: stockSymbol
-          in: query
+          in: path  # Path parameter
           required: true
           schema:
             type: string
@@ -34,7 +35,28 @@ paths:
           description: Symbol created
         404:
           description: Symbol already exists or invalid symbol
-  /mint:
+
+  /onramp/inr:
+    post:
+      summary: Add funds to user's INR balance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                amount:
+                  type: integer
+      responses:
+        200:
+          description: Funds added
+        400:
+          description: User does not exist
+
+  /trade/mint:
     post:
       summary: Mint tokens for a user
       requestBody:
@@ -57,24 +79,27 @@ paths:
           description: Tokens minted
         400:
           description: Invalid input or insufficient balance
+
   /reset:
     post:
       summary: Reset all balances and order book
       responses:
         200:
           description: Reset successfully
+
   /balances/inr:
     get:
       summary: Get all INR balances
       responses:
         200:
           description: Returns all INR balances
-  /balances/inr/{userId}:
+
+  /balances/inr/{userId}:  # Path parameter for userId
     get:
       summary: Get INR balance for a user
       parameters:
         - name: userId
-          in: path
+          in: path  # Path parameter
           required: true
           schema:
             type: string
@@ -83,18 +108,20 @@ paths:
           description: Returns user's INR balance
         400:
           description: User does not exist
-  /balances/stocks:
+
+  /balances/stock:
     get:
       summary: Get all stock balances
       responses:
         200:
           description: Returns all stock balances
-  /balances/stocks/{userId}:
+
+  /balances/stock/{userId}:  # Path parameter for userId
     get:
       summary: Get stock balance for a user
       parameters:
         - name: userId
-          in: path
+          in: path  # Path parameter
           required: true
           schema:
             type: string
@@ -103,37 +130,20 @@ paths:
           description: Returns user's stock balance
         400:
           description: User does not exist
-  /onramp:
-    post:
-      summary: Add funds to user's INR balance
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-                amount:
-                  type: integer
-      responses:
-        200:
-          description: Funds added
-        400:
-          description: User does not exist
+
   /orderbook:
     get:
       summary: Get the full order book
       responses:
         200:
           description: Returns the full order book
-  /orderbook/{stockSymbol}:
+
+  /orderbook/{stockSymbol}:  # Path parameter for stockSymbol
     get:
       summary: View orders for a stock symbol
       parameters:
         - name: stockSymbol
-          in: path
+          in: path  # Path parameter
           required: true
           schema:
             type: string
@@ -142,7 +152,8 @@ paths:
           description: Returns orders for the given stock symbol
         400:
           description: Stock does not exist
-  /orders/buy:
+
+  /order/buy:
     post:
       summary: Place a buy order
       requestBody:
@@ -168,7 +179,8 @@ paths:
           description: Buy order placed and executed
         400:
           description: Invalid input or insufficient balance
-  /orders/sell:
+
+  /order/sell:
     post:
       summary: Place a sell order
       requestBody:
@@ -194,7 +206,8 @@ paths:
           description: Sell order placed
         400:
           description: Invalid input or insufficient stock balance
-  /orders/cancel:
+
+  /order/cancel:
     post:
       summary: Cancel an order
       requestBody:
