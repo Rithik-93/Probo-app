@@ -1,5 +1,5 @@
 import express from "express"
-import { forwardReq } from "./controller.ts/controller";
+import { forwardReq } from "./controllers/controller";
 
 export const router = express.Router();
 
